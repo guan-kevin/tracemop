@@ -37,7 +37,9 @@ There are two ways to use TraceMOP. In the future, we will add documentation on 
 
    b. `bash collect_traces.sh <org/repo> <sha> <output-directory> [measure-time (default is false)] [collect-per-test (default is false)]`
 
-   Example: `bash collect_traces.sh flowpowered/commons 0690efd output true`
+   Example: `bash collect_traces.sh flowpowered/commons 0690efd output true`.
+
+   The above example will collect traces for project flowpowered/commons (sha 0690efd), save results to `output` directory.
 
 2. **Run without trace collection** Run the following commands **inside** Docker container:
 
@@ -46,6 +48,30 @@ There are two ways to use TraceMOP. In the future, we will add documentation on 
    b. `bash not_collect_traces.sh <org/repo> <sha> <output-directory> [statistics (default is false)] [save-violations (default is true)]`
 
    Example: `bash not_collect_traces.sh flowpowered/commons 0690efd output`
+
+   The above example will run RV on flowpowered/commons (sha 0690efd), save results to `output` directory.
+
+## Output Structure
+
+The output directory contains 4 sub-directories:
+
+| Directory           | Contents                                           |
+| --------------------|----------------------------------------------------|
+| all-traces          | the recorded traces                                |
+| logs                | the outputs of `git clone`, `mvn test`, etc.       |
+| project             | the source code of the input project               |
+| repo                | maven's m2 repository for the input project        |
+
+(If running with `collect_traces.sh`) The all-traces directory contains 4 files:
+
+| Directory           | Purpose                                             |
+| --------------------| ----------------------------------------------------|
+| locations.txt       | maps short location IDs to actual line of code      |
+| specs-frequency.csv | maps trace IDs to specs and frequencies             |
+| specs-test.csv      | maps trace IDs to tests that generated the traces   |
+| unique-traces.txt   | list of unique traces (trace ID, frequench, tracce) |
+
+If TraceMOP raised violations during RV, TraceMOP will save the violations to file: `project/violation-counts`
 
 ## Configuration
 
