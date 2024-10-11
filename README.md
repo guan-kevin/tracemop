@@ -39,7 +39,7 @@ There are two ways to use TraceMOP at this time. In the future, we will add docu
 
    Example: `bash collect_traces.sh flowpowered/commons 0690efd output true`.
 
-   The above example will collect traces for the project, [flowpowered/commons (sha 0690efd)](https://github.com/flowpowered/commons), save results to `output` directory.
+   The above example will collect traces for the project, [`flowpowered/commons` (sha 0690efd)](https://github.com/flowpowered/commons/tree/0690efd), and save results to `output` directory.
 
 2. **Run without trace collection (i.e., only get JavaMOP functionality).** Run the following commands **inside** Docker container:
 
@@ -49,7 +49,7 @@ There are two ways to use TraceMOP at this time. In the future, we will add docu
 
    Example: `bash not_collect_traces.sh flowpowered/commons 0690efd output`
 
-   The above example will run RV on flowpowered/commons (sha 0690efd), save results to `output` directory.
+   The above example will run RV on [`flowpowered/commons` (sha 0690efd)](https://github.com/flowpowered/commons/tree/0690efd), save results to `output` directory.
 
 ## Output Structure
 
