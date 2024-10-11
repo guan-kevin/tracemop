@@ -9,6 +9,16 @@ public interface TraceDB {
 
     void update(String monitorID, String trace, int length);
 
+    default void replace(String monitorID, List<String> trace) {}
+
+    default void add(String monitorID, String event) {}
+    default void addRaw(String monitorID, String event) {}
+
+    default void cloneMonitor(String oldMonitor, String newMonitor) {}
+    default void cloneMonitorRaw(String oldMonitor, String newMonitor) {}
+
+    default void setCurrentTest(String test) {}
+
     void createTable();
 
     int uniqueTraces();

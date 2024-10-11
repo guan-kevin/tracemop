@@ -1,6 +1,7 @@
 // Copyright (c) 2002-2014 JavaMOP Team. All Rights Reserved.
 package javamop.output.combinedaspect.event.advice;
 
+import javamop.JavaMOPMain;
 import javamop.output.MOPVariable;
 import javamop.output.combinedaspect.ActivatorManager;
 import javamop.output.combinedaspect.CombinedAspect;
@@ -325,6 +326,10 @@ public class AdviceAndPointCut {
             ret += "(";
 
             // Parameters
+            if (JavaMOPMain.options.internalBehaviorObserving || JavaMOPMain.options.locationFromAjc) {
+                ret += "thisJoinPointStaticPart, thisEnclosingJoinPointStaticPart, ";
+            }
+
             // Original (including threadVar)
             String original = event.getParameters().parameterString();
             ret += original;
@@ -361,6 +366,10 @@ public class AdviceAndPointCut {
                 } else {
                     ret += ", " + staticsig;
                 }
+            }
+
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
             }
 
             ret += ");\n";

@@ -140,12 +140,18 @@ public class SuffixMonitor extends Monitor {
 
         ret += "final" + synch + "void event_" + event.getId() + "(";
         {
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint, ";
+            }
             RVMParameters params;
             if (Main.options.stripUnusedParameterInMonitor)
                 params = event.getReferredParameters(event.getRVMParameters());
             else
                 params = event.getRVMParameters();
             ret += params.parameterDeclString();
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
         }
         ret += ") {\n";
 
@@ -214,12 +220,20 @@ public class SuffixMonitor extends Monitor {
 
         ret += monitorVar + ".event_" + event.getId() + "(";
         {
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "joinpoint, enclosingJoinpoint, ";
+            }
+
             RVMParameters passing;
             if (Main.options.stripUnusedParameterInMonitor)
                 passing = event.getReferredParameters(event.getRVMParameters());
             else
                 passing = event.getRVMParameters();
             ret += passing.parameterString();
+
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
         }
         ret += ");\n";
 

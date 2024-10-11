@@ -265,8 +265,15 @@ public class Advice {
         String ret = "";
 
         if (Main.options.inline) {
-            ret += "void " + inlineFuncName + "("
-                    + inlineParameters.parameterDeclString();
+            ret += "void " + inlineFuncName + "(";
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint, ";
+            }
+            ret += inlineParameters.parameterDeclString();
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
+
             ret += ") {\n";
 
             ret += adviceBody();
@@ -276,12 +283,27 @@ public class Advice {
 
         ret += "public static final void " + pointcutName;
         ret += "(";
+
+        if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+            ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint, ";
+        }
         ret += parameters.parameterDeclString();
+        if (ret.endsWith(", ")) {
+            ret = ret.substring(0, ret.length() - 2);
+        }
+
         ret += ")";
         ret += " {\n";
 
         if (Main.options.inline) {
-            ret += inlineFuncName + "(" + inlineParameters.parameterString();
+            ret += inlineFuncName + "(";
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint, ";
+            }
+            ret += inlineParameters.parameterString();
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
             ret += ");\n";
         } else {
             ret += adviceBody();

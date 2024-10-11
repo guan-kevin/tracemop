@@ -24,3 +24,16 @@ scripts/props/*.rvm
 
 \#*\#
 .\#*
+.DS_Store
+
+### Paper ###
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.out
+*.pdf
+*.ps
+*.xcp
+*.pyc

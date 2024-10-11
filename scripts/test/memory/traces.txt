@@ -1,0 +1,3 @@
+=== END OF TRACE ===
+Total number of traces: 2918981
+Total number of unique traces: 116

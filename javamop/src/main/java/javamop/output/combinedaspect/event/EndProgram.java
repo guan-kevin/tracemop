@@ -3,6 +3,8 @@ package javamop.output.combinedaspect.event;
 
 import java.util.ArrayList;
 
+import javamop.JavaMOPMain;
+import javamop.JavaMOPOptions;
 import javamop.util.MOPException;
 import javamop.output.MOPVariable;
 import javamop.output.combinedaspect.CombinedAspect;
@@ -92,7 +94,11 @@ public class EndProgram {
             
             ret += EventManager.EventMethodHelper.methodName(eventBody.getMOPSpec(), eventBody.event,
                 eventBody.fileName);
-            ret += "();\n";
+            if (JavaMOPMain.options.internalBehaviorObserving || JavaMOPMain.options.locationFromAjc) {
+                ret += "(null, null);\n";
+            } else {
+                ret += "();\n";
+            }
             
             if (eventBodies.size() > 1) {
                 ret += "}\n";

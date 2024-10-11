@@ -200,14 +200,20 @@ public class RuntimeServiceManager implements ICodeGenerator {
         List<CodeExpr> args = new ArrayList<>();
         args.add(CodeLiteralExpr.bool(Main.options.computeUniqueTraceStats));
         args.add(CodeLiteralExpr.bool(Main.options.storeEventLocationMapFile));
-        args.add(new CodeNewExpr(fileType, CodeLiteralExpr.string(TraceUtil.getAbsolutePath("locations.txt"))));
-        args.add(CodeLiteralExpr.string(TraceUtil.getAbsolutePath("tracedb")));
-        args.add(CodeLiteralExpr.string(TraceUtil.dbConf.getAbsolutePath()));
+        args.add(new CodeNewExpr(fileType, getDBRelatedFile("locations.txt")));
+        args.add(getDBRelatedFile("tracedb"));
+//        args.add(CodeLiteralExpr.string(TraceUtil.dbConf.getAbsolutePath()));
+        args.add(
+            CodeLiteralExpr.fromLegacy(CodeType.string(),
+                "System.getenv(\"TRACEDB_CONFIG_PATH\") == null ? \"" + TraceUtil.dbConf.getAbsolutePath() + "\" : " +
+                        "System.getenv(\"TRACEDB_CONFIG_PATH\")"
+            )
+        );
         if (observerType.equals("UniqueMonitorTraceCollector")) {
-            args.add(new CodeNewExpr(writer, CodeLiteralExpr.string(TraceUtil.getAbsolutePath("unique-traces.txt"))));
+            args.add(new CodeNewExpr(writer, getDBRelatedFile("unique-traces.txt")));
         }
         tracerStatements = getObserverStatements(fileType, writer, "traceWriter",
-                observerType, TraceUtil.getAbsolutePath("traces.txt"), "tracer", args);
+                observerType, "traces.txt", "tracer", args);
         return tracerStatements;
     }
 
@@ -217,7 +223,7 @@ public class RuntimeServiceManager implements ICodeGenerator {
         CodeVariable dumpWriterVar = new CodeVariable(writer, writerName);
         CodeType behaviorDumper = new CodeType(observerType);
         CodeVarDeclStmt createDumpWriter = new CodeVarDeclStmt(dumpWriterVar,
-                new CodeNewExpr(writer, new CodeNewExpr(fileType, CodeLiteralExpr.string(outputFileName))));
+                new CodeNewExpr(writer, new CodeNewExpr(fileType, getDBRelatedFile(outputFileName))));
         CodeVariable dumper = new CodeVariable(behaviorDumper, observerVarName);
         List<CodeExpr> args = new ArrayList<>();
         args.add(new CodeVarRefExpr(dumpWriterVar));
@@ -231,6 +237,15 @@ public class RuntimeServiceManager implements ICodeGenerator {
         dumperStatements.add(createDumper);
         dumperStatements.add(registerDumperStatement);
         return dumperStatements;
+    }
+
+    private CodeExpr getDBRelatedFile(String filename) {
+        // System.getenv("TRACEDB_PATH") == null ? "path/filename.txt" : System.getenv("TRACEDB_PATH") + File.separator + "filename.txt"
+        return CodeLiteralExpr.fromLegacy(CodeType.string(),
+                // Use File.separator?
+                "System.getenv(\"TRACEDB_PATH\") == null ? \"" + TraceUtil.getAbsolutePath(filename) + "\" : " +
+                        "System.getenv(\"TRACEDB_PATH\") + com.runtimeverification.rvmonitor.java.rt.util.TraceDatabase.getInstance().randomFileName + File.separator + \"" + filename + "\""
+        );
     }
 
     private CodeTryCatchFinallyStmt.CatchBlock getCatchBlock(CodeType fileType) {

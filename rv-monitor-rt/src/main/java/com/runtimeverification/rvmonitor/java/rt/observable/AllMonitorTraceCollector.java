@@ -2,11 +2,14 @@ package com.runtimeverification.rvmonitor.java.rt.observable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.runtimeverification.rvmonitor.java.rt.util.TraceDatabase;
 import com.runtimeverification.rvmonitor.java.rt.util.TraceUtil;
 
 public class AllMonitorTraceCollector extends MonitorTraceCollector {
@@ -29,7 +32,7 @@ public class AllMonitorTraceCollector extends MonitorTraceCollector {
         try {
             this.locationMapWriter = new PrintWriter(locationMapFile);
         } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
+            printError(ex.getMessage());
         }
     }
 
@@ -48,14 +51,18 @@ public class AllMonitorTraceCollector extends MonitorTraceCollector {
     }
 
     private void writeLocationMapToFile() {
-        locationMapWriter.println("=== LOCATION MAP ===");
-        List<Map.Entry<String, Integer>> locations = new ArrayList<>(TraceUtil.getLocationMap().entrySet());
-        locations.sort(Map.Entry.comparingByValue());
-        for (Map.Entry<String, Integer> location : locations) {
-            locationMapWriter.println(location.getValue() + " " + location.getKey());
+        try {
+            locationMapWriter.println("=== LOCATION MAP ===");
+            List<Map.Entry<String, Integer>> locations = new ArrayList<>(TraceUtil.getLocationMap().entrySet());
+            locations.sort(Map.Entry.comparingByValue());
+            for (Map.Entry<String, Integer> location : locations) {
+                locationMapWriter.println(location.getValue() + " " + location.getKey());
+            }
+            locationMapWriter.close();
+            locationMapWriter.flush();
+        } catch (Exception ex) {
+            printError(Arrays.toString(ex.getStackTrace()));
         }
-        locationMapWriter.close();
-        locationMapWriter.flush();
     }
 
     private void processTracesWithoutAnalysis() {
@@ -68,4 +75,17 @@ public class AllMonitorTraceCollector extends MonitorTraceCollector {
         this.writer.println("Total number of traces: " + traceDB.size());
         this.writer.println("Total number of unique traces: " + traceDB.uniqueTraces());
     }
+
+    private void printError(String message) {
+        try {
+            FileWriter fileWriter = new FileWriter(System.getenv("TRACEDB_PATH") + TraceDatabase.getInstance().randomFileName + File.separator +
+                    "error-location.txt");
+            PrintWriter writer = new PrintWriter(fileWriter);
+            writer.println("MESSAGE:");
+            writer.println(message);
+            writer.flush();
+            writer.close();
+        } catch (Exception ignored) {}
+    }
+
 }

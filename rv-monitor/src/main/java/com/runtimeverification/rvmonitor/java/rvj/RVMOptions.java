@@ -77,6 +77,9 @@ public class RVMOptions {
             " such as traces, or monitoring steps.")
     public boolean internalBehaviorObserving;
 
+    @Parameter(names={"-locationFromAjc"},description = "Get violation locations from AspectJ instead of stack trace.")
+    public boolean locationFromAjc = true;
+
     @Parameter(names={"-collectAllTraces"},description = "Collect all the steps that are taken during runtime " +
             "monitoring, including indexing lookups, monitor creations, monitor cloning, etc.")
     public boolean collectAllTraces;
@@ -107,7 +110,7 @@ public class RVMOptions {
     @Parameter(names="-artifactsDir",
             description = "Directory in which to store a .traces directory that, in turn, contains trace-related files",
             converter = JavaMOPOptions.FileConverter.class)
-    public File artifactsDir = new File(System.getProperty("java.io.tmpdir"));
+    public File artifactsDir = new File(System.getProperty("java.io.tmpdir"));  // Not really useful anymore
 
     @Parameter(names="-dbConfigFile",
             description = "File containing database configurations to use for capturing traces",

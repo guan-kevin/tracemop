@@ -130,9 +130,18 @@ public class EndThread {
         ret += EventManager.EventMethodHelper.methodName(eventBody.getMOPSpec(), event,
             eventBody.fileName);
         ret += "(";
-        if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
-            ret += event.getThreadVar();
+        if (JavaMOPMain.options.internalBehaviorObserving || JavaMOPMain.options.locationFromAjc) {
+            ret += "thisJoinPointStaticPart, thisEnclosingJoinPointStaticPart";
+
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += ", " + event.getThreadVar();
+            }
+        } else {
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += event.getThreadVar();
+            }
         }
+
         ret += ");\n";
         
         ret += "}\n";
@@ -167,8 +176,16 @@ public class EndThread {
         ret += EventManager.EventMethodHelper.methodName(eventBody.getMOPSpec(), event,
             eventBody.fileName);
         ret += "(";
-        if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
-            ret += event.getThreadVar();
+        if (JavaMOPMain.options.internalBehaviorObserving || JavaMOPMain.options.locationFromAjc) {
+            ret += "thisJoinPointStaticPart, thisEnclosingJoinPointStaticPart";
+
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += ", " + event.getThreadVar();
+            }
+        } else {
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += event.getThreadVar();
+            }
         }
         ret += ");\n";
         
@@ -218,8 +235,16 @@ public class EndThread {
         ret += EventManager.EventMethodHelper.methodName(eventBody.getMOPSpec(), event,
             eventBody.fileName);
         ret += "(";
-        if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
-            ret += event.getThreadVar();
+        if (JavaMOPMain.options.internalBehaviorObserving || JavaMOPMain.options.locationFromAjc) {
+            ret += "thisJoinPointStaticPart, thisEnclosingJoinPointStaticPart";
+
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += ", " + event.getThreadVar();
+            }
+        } else {
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += event.getThreadVar();
+            }
         }
         ret += ");\n";
         
@@ -274,8 +299,16 @@ public class EndThread {
         ret += EventManager.EventMethodHelper.methodName(eventBody.getMOPSpec(), event,
             eventBody.fileName);
         ret += "(";
-        if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
-            ret += event.getThreadVar();
+        if (JavaMOPMain.options.internalBehaviorObserving || JavaMOPMain.options.locationFromAjc) {
+            ret += "thisJoinPointStaticPart, thisEnclosingJoinPointStaticPart";
+
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += ", " + event.getThreadVar();
+            }
+        } else {
+            if (event.getThreadVar() != null && event.getThreadVar().length() != 0) {
+                ret += event.getThreadVar();
+            }
         }
         ret += ");\n";
         

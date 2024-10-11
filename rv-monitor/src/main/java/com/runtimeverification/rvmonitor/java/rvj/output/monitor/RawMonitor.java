@@ -102,7 +102,7 @@ public class RawMonitor extends Monitor {
             // __DEFAULT_MESSAGE first
             // -P
             eventActionStr = eventActionStr.replaceAll("__LOC",
-                    Util.defaultLocation);
+                    Util.getDefaultLocation());
             eventActionStr = eventActionStr.replaceAll("__ACTIVITY", "this."
                     + activity);
             eventActionStr = eventActionStr.replaceAll("__SKIP",
@@ -116,21 +116,28 @@ public class RawMonitor extends Monitor {
         ret += "final" + synch + (retbool ? "boolean" : "void") + " event_"
                 + event.getId() + "(";
         {
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint, ";
+            }
             RVMParameters params;
             if (Main.options.stripUnusedParameterInMonitor)
                 params = event.getReferredParameters(event.getRVMParameters());
             else
                 params = event.getRVMParameters();
             ret += params.parameterDeclString();
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
         }
         ret += ") {\n";
         if (has__SKIP)
             ret += "boolean " + BaseMonitor.skipEvent + " = false;\n";
 
         if (Main.options.internalBehaviorObserving) {
-            ret += "this.trace.add(\"";
+            // Receive new event, notify traceDB
+            ret += "com.runtimeverification.rvmonitor.java.rt.util.TraceDatabase.getInstance().addRaw(specName + \"#\" + this.monitorid, \"";
             if (Main.options.trackEventLocations) {
-                ret += event.getId() + "\" + \"~\" + TraceUtil.getShortLocation(com.runtimeverification.rvmonitor.java.rt.ViolationRecorder.getLineOfCode())";
+                ret += event.getId() + "\" + \"~\" + TraceUtil.getShortLocation(joinpoint, enclosingJoinpoint)";
             } else {
                 ret += event.getId() + "\"";
             }
@@ -175,12 +182,20 @@ public class RawMonitor extends Monitor {
         // }
         ret += monitorVar + ".event_" + event.getId() + "(";
         {
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "joinpoint, enclosingJoinpoint, ";
+            }
+
             RVMParameters params;
             if (Main.options.stripUnusedParameterInMonitor)
                 params = event.getReferredParameters(event.getRVMParameters());
             else
                 params = event.getRVMParameters();
             ret += params.parameterString();
+
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
         }
         ret += ");\n";
 
@@ -219,9 +234,14 @@ public class RawMonitor extends Monitor {
         if (monitorInfo != null)
             ret += monitorInfo.copy("ret", "this");
         if (Main.options.internalBehaviorObserving) {
-            ret += "ret.monitorid = ++nextid;\n";
-            ret += "ret.trace = new ArrayList<String>();\n";
-            ret += "ret.trace.addAll(this.trace);\n";
+            ret += "ret.monitorid = nextid.incrementAndGet();\n";
+            // Clone monitor, notify traceDB
+            ret += "com.runtimeverification.rvmonitor.java.rt.util.TraceDatabase.getInstance().cloneMonitorRaw(";
+            ret += "specName + \"#\" + this.monitorid, specName + \"#\" + ret.monitorid";
+            ret += ");\n";
+
+//            ret += "ret.trace = new ArrayList<String>();\n";
+//            ret += "ret.trace.addAll(this.trace);\n";
         }
         ret += "return ret;\n";
         ret += "}\n";
@@ -235,7 +255,9 @@ public class RawMonitor extends Monitor {
 //            ret += "public List<String> getTrace(){ return this.trace; };\n";
 //            ret += "private int monitorid;\n";
 //            ret += "public int getMonitorID(){ return this.monitorid; };\n";
-            ret += "private static int nextid;\n";
+            ret += "private static java.util.concurrent.atomic.AtomicInteger nextid = new java.util.concurrent.atomic.AtomicInteger(0);\n";
+            ret += "private static String specName = \"" + this.monitorName + "\";\n";
+
             ret += "\n";
             ret += "@Override\n";
             ret += "public final String getObservableObjectDescription() {\n";
@@ -249,13 +271,13 @@ public class RawMonitor extends Monitor {
 //                ret += "s.append(this.disable);\n";
 //                ret += "s.append('}');\n";
 //            }
-            ret += "s.append('[');\n";
-            ret += "for (int i = 0; i < this.trace.size(); ++i) {\n";
-            ret += "if (i > 0)\n";
-            ret += "s.append(',');\n";
-            ret += "s.append(this.trace.get(i));\n";
-            ret += "}\n";
-            ret += "s.append(']');\n";
+//            ret += "s.append('[');\n";
+//            ret += "for (int i = 0; i < this.trace.size(); ++i) {\n";
+//            ret += "if (i > 0)\n";
+//            ret += "s.append(',');\n";
+//            ret += "s.append(this.trace.get(i));\n";
+//            ret += "}\n";
+//            ret += "s.append(']');\n";
             ret += "return s.toString();\n";
             ret += "}\n";
         }
@@ -275,8 +297,8 @@ public class RawMonitor extends Monitor {
             ret += stat.incNumMonitor();
         }
         if (Main.options.internalBehaviorObserving) {
-            ret += "this.trace = new ArrayList<String>();\n";
-            ret += "this.monitorid = ++nextid;\n";
+//            ret += "this.trace = new ArrayList<String>();\n";
+            ret += "this.monitorid = nextid.incrementAndGet();\n";
         }
         ret += "}\n";
 

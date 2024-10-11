@@ -1,0 +1,117 @@
+0 {StringBuilder_ThreadSafeMonitor=1048576}
+1 {StringBuilder_ThreadSafeMonitor=98304}
+2 {Appendable_ThreadSafeMonitor=1048576}
+3 {StringBuilder_ThreadSafeMonitor=98304}
+4 {StringBuilder_ThreadSafeMonitor=98304}
+5 {Appendable_ThreadSafeMonitor=98304}
+6 {Appendable_ThreadSafeMonitor=98304}
+7 {Appendable_ThreadSafeMonitor=98304}
+8 {Appendable_ThreadSafeMonitor=98304}
+9 {StringBuilder_ThreadSafeMonitor=2048}
+10 {Appendable_ThreadSafeMonitor=2048}
+11 {Throwable_InitCauseOnceMonitor=38}
+12 {Throwable_InitCauseOnceMonitor=171}
+13 {Collection_UnsafeIteratorMonitor=2}
+14 {Collection_UnsafeIteratorMonitor=2}
+15 {Collection_UnsafeIteratorMonitor=2}
+16 {Appendable_ThreadSafeMonitor=8}
+17 {Appendable_ThreadSafeMonitor=8}
+18 {Appendable_ThreadSafeMonitor=7}
+19 {Appendable_ThreadSafeMonitor=1}
+20 {Appendable_ThreadSafeMonitor=1}
+21 {Appendable_ThreadSafeMonitor=1}
+22 {Appendable_ThreadSafeMonitor=1}
+23 {Appendable_ThreadSafeMonitor=1}
+24 {Appendable_ThreadSafeMonitor=1}
+25 {Appendable_ThreadSafeMonitor=8}
+26 {Appendable_ThreadSafeMonitor=8}
+27 {StringBuilder_ThreadSafeMonitor=98304}
+28 {Runnable_OverrideRunMonitor=1}
+29 {Thread_SetDaemonBeforeStartMonitor=64}
+30 {Collection_HashCodeMonitor=1}
+31 {Serializable_NoArgConstructorMonitor=1}
+32 {Thread_StartOnceMonitor=64}
+33 {Appendable_ThreadSafeMonitor=15104}
+34 {Appendable_ThreadSafeMonitor=20}
+35 {Iterator_RemoveOnceMonitor=2}
+36 {Iterator_RemoveOnceMonitor=2}
+37 {Iterator_RemoveOnceMonitor=2}
+38 {Appendable_ThreadSafeMonitor=256}
+39 {StringBuilder_ThreadSafeMonitor=15104}
+40 {StringBuilder_ThreadSafeMonitor=20}
+41 {StringBuilder_ThreadSafeMonitor=8}
+42 {StringBuilder_ThreadSafeMonitor=1}
+43 {StringBuilder_ThreadSafeMonitor=1}
+44 {StringBuilder_ThreadSafeMonitor=1}
+45 {StringBuilder_ThreadSafeMonitor=1}
+46 {StringBuilder_ThreadSafeMonitor=1}
+47 {StringBuilder_ThreadSafeMonitor=8}
+48 {StringBuilder_ThreadSafeMonitor=7}
+49 {StringBuilder_ThreadSafeMonitor=8}
+50 {StringBuilder_ThreadSafeMonitor=8}
+51 {StringBuilder_ThreadSafeMonitor=1}
+52 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=1}
+53 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=1}
+54 {Map_UnsafeIteratorMonitor=1}
+55 {Map_UnsafeIteratorMonitor=1}
+56 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=2}
+57 {Map_UnsafeIteratorMonitor=1}
+58 {Map_UnsafeIteratorMonitor=1}
+59 {Map_UnsafeIteratorMonitor=1}
+60 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=2}
+61 {Collection_UnsynchronizedAddAllMonitor=1}
+62 {Collection_UnsynchronizedAddAllMonitor=1}
+63 {Collection_UnsynchronizedAddAllMonitor=1}
+64 {Collection_UnsynchronizedAddAllMonitor=1}
+65 {Collection_UnsynchronizedAddAllMonitor=1}
+66 {Collection_UnsynchronizedAddAllMonitor=1}
+67 {System_NullArrayCopyMonitor=1}
+68 {Collection_UnsafeIteratorMonitor=2}
+69 {Collection_UnsafeIteratorMonitor=2}
+70 {Collection_UnsafeIteratorMonitor=1}
+71 {Collection_UnsafeIteratorMonitor=1}
+72 {StringBuilder_ThreadSafeMonitor=256}
+73 {ByteArrayOutputStream_FlushBeforeRetrieveMonitor=1}
+74 {Map_ItselfAsValueMonitor=1, Map_ItselfAsKeyMonitor=1}
+75 {Iterator_HasNextMonitor=2}
+76 {Iterator_HasNextMonitor=2}
+77 {Iterator_HasNextMonitor=2}
+78 {Iterator_HasNextMonitor=2}
+79 {Iterator_HasNextMonitor=2}
+80 {Iterator_HasNextMonitor=1}
+81 {Iterator_HasNextMonitor=12}
+82 {Iterator_HasNextMonitor=1}
+83 {Map_CollectionViewAddMonitor=1}
+84 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=2}
+85 {Map_CollectionViewAddMonitor=1}
+86 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=1}
+87 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=1}
+88 {Map_UnsafeIteratorMonitor=1, Map_CollectionViewAddMonitor=1}
+89 {Map_UnsafeIteratorMonitor=1}
+90 {Map_UnsafeIteratorMonitor=1}
+91 {Map_UnsafeIteratorMonitor=1}
+92 {Map_UnsafeIteratorMonitor=1}
+93 {Map_UnsafeIteratorMonitor=1}
+94 {Map_UnsafeIteratorMonitor=1}
+95 {Map_UnsafeIteratorMonitor=1}
+96 {Map_UnsafeIteratorMonitor=1}
+97 {Map_UnsafeIteratorMonitor=1}
+98 {Map_UnsafeIteratorMonitor=1}
+99 {Map_UnsafeIteratorMonitor=1}
+100 {Map_UnsafeIteratorMonitor=1}
+101 {Map_UnsafeIteratorMonitor=1}
+102 {Map_UnsafeIteratorMonitor=1}
+103 {Map_UnsafeIteratorMonitor=1}
+104 {Map_UnsafeIteratorMonitor=1}
+105 {Map_UnsafeIteratorMonitor=1}
+106 {Set_ItselfAsElementMonitor=1}
+107 {Collections_SortBeforeBinarySearchMonitor=2}
+108 {Collections_SortBeforeBinarySearchMonitor=2}
+109 {Collections_SortBeforeBinarySearchMonitor=2}
+110 {Collections_SortBeforeBinarySearchMonitor=2}
+111 {CharSequence_NotInSetMonitor=1}
+112 {Iterator_RemoveOnceMonitor=2}
+113 {Iterator_RemoveOnceMonitor=1}
+114 {Iterator_RemoveOnceMonitor=2}
+115 {Iterator_RemoveOnceMonitor=1}
+OK

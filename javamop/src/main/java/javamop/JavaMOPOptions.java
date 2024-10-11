@@ -64,6 +64,13 @@ public class JavaMOPOptions {
     @Parameter(names={"-emop"}, description = "Flag for emop.")
     public boolean emop = false;
 
+    @Parameter(names={"-internalBehaviorObserving"},description = "Track some internals of the monitoring process" +
+            " such as traces, or monitoring steps.")
+    public boolean internalBehaviorObserving;
+
+    @Parameter(names={"-locationFromAjc"},description = "Get violation locations from AspectJ instead of stack trace.")
+    public boolean locationFromAjc = true;
+
     @Parameter(names={"-h","-help"}, description = "Show this help message.", help = true)
     private boolean help = false;
 

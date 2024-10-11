@@ -1,5 +1,8 @@
 package com.runtimeverification.rvmonitor.java.rt.util;
 
+import com.runtimeverification.rvmonitor.java.rt.ViolationRecorder;
+import org.aspectj.lang.JoinPoint;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,10 +24,13 @@ public class TraceUtil {
     /**
      * This method reduces the size of stored traces.
      *
-     * @param fullLOC E.g., org.apache.commons.fileupload2.MultipartStream$ItemInputStream.close(MultipartStream.java:950),
+     * @param joinpoint I.e., thisJoinPointStaticPart from AspectJ,
      * @return A short location ID, e.g., loc2.
      */
-    public static Integer getShortLocation(String fullLOC) {
+    public static Integer getShortLocation(JoinPoint.StaticPart joinpoint, JoinPoint.StaticPart enclosingJoinpoint) {
+        // IDE shows no usage, but monitors will call this method to get short ID
+        int methodLineNumber = enclosingJoinpoint.getSourceLocation().getLine(); // in case we have multiple methods with the same name
+        String fullLOC = ViolationRecorder.getLineOfCode(joinpoint) + methodLineNumber;
         Integer shortLocation = locationMap.get(fullLOC);
         if (shortLocation == null) {
             // we do not have the fullLOC in the map; add it and return the shortLocation

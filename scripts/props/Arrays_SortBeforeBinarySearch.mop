@@ -53,7 +53,7 @@ Arrays_SortBeforeBinarySearch(Object[] arr) {
 	}
 
 	event modify before(Object[] arr) :
-		set(Object[] *) && args(arr) {
+		set(Object[] *) && args(arr) && if(arr != null) {
 		this.toIndex = 0;
 	}
 

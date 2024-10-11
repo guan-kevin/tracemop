@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -17,10 +18,7 @@ import com.runtimeverification.rvmonitor.java.rt.tablebase.AbstractPartitionedMo
 import com.runtimeverification.rvmonitor.java.rt.tablebase.IDisableHolder;
 import com.runtimeverification.rvmonitor.java.rt.tablebase.IIndexingTreeValue;
 import com.runtimeverification.rvmonitor.java.rt.tablebase.IMonitor;
-import com.runtimeverification.rvmonitor.java.rt.util.TraceDB;
-import com.runtimeverification.rvmonitor.java.rt.util.TraceDBH2;
-import com.runtimeverification.rvmonitor.java.rt.util.TraceDBH2Normalized;
-import com.runtimeverification.rvmonitor.java.rt.util.TraceDBSQLite;
+import com.runtimeverification.rvmonitor.java.rt.util.*;
 
 public class MonitorTraceCollector implements IInternalBehaviorObserver {
 
@@ -43,7 +41,9 @@ public class MonitorTraceCollector implements IInternalBehaviorObserver {
         this.monitors = new HashSet<>();
         this.dbConfPath = dbConfPath;
         loadDBConfig();
-        this.traceDB = getTraceDB(dbPath);
+        // TODO: CLEAN THIS UP
+//        this.traceDB = getTraceDB(dbPath);
+        this.traceDB = TraceDatabase.getInstance();
         setDumpingTraces(getDumpConfig());
         traceDB.createTable();
     }
@@ -102,6 +102,12 @@ public class MonitorTraceCollector implements IInternalBehaviorObserver {
                     case "sqlite":
                         traceDB = new TraceDBSQLite(dbPath);
                         break;
+                    case "memory":
+                        traceDB = new TraceDBMemory();
+                        break;
+                    case "none":
+                        traceDB = new TraceDBNone();
+                        break;
                     default:
                         traceDB = new TraceDBH2(dbPath);
                 }
@@ -132,9 +138,15 @@ public class MonitorTraceCollector implements IInternalBehaviorObserver {
         this.isDumpingTraces = dumpingTraces;
     }
 
+
     @Override
     public void onMonitorTransitioned(AbstractMonitor monitor) {
-        insertOrUpdate(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace.toString(), monitor.trace.size());
+//        insertOrUpdate(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace.toString(), monitor.trace.size());
+//        insert(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace);
+    }
+
+    private void insert(String monitorID, List<String> trace) {
+        traceDB.replace(monitorID, trace);
     }
 
     private void insertOrUpdate(String monitorID, String trace, int length) {
@@ -149,8 +161,9 @@ public class MonitorTraceCollector implements IInternalBehaviorObserver {
     public <TMonitor extends IMonitor> void onMonitorTransitioned(AbstractMonitorSet<TMonitor> set) {
         for (int i = 0; i < set.getSize(); ++i) {
             // AbstractMonitor is the only parent of all monitor types and it implements IMonitor
-            AbstractMonitor monitor = (AbstractMonitor) set.get(i);
-            insertOrUpdate(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace.toString(), monitor.trace.size());
+//            AbstractMonitor monitor = (AbstractMonitor) set.get(i);
+//            insertOrUpdate(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace.toString(), monitor.trace.size());
+//            insert(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace);
         }
     }
 
@@ -158,8 +171,9 @@ public class MonitorTraceCollector implements IInternalBehaviorObserver {
     public <TMonitor extends IMonitor> void onMonitorTransitioned(AbstractPartitionedMonitorSet<TMonitor> set) {
         for (AbstractPartitionedMonitorSet<TMonitor>.MonitorIterator i = set.monitorIterator(true); i.moveNext(); ) {
             // AbstractMonitor is the only parent of all monitor types and it implements IMonitor
-            AbstractMonitor monitor = (AbstractMonitor) i.getMonitor();
-            insertOrUpdate(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace.toString(), monitor.trace.size());
+//            AbstractMonitor monitor = (AbstractMonitor) i.getMonitor();
+//            insertOrUpdate(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace.toString(), monitor.trace.size());
+//            insert(monitor.getClass().getSimpleName() + "#" + monitor.monitorid, monitor.trace);
         }
     }
 
@@ -211,7 +225,8 @@ public class MonitorTraceCollector implements IInternalBehaviorObserver {
 
     @Override
     public void onMonitorCloned(AbstractMonitor existing, AbstractMonitor created) {
-
+        // Copy traces
+//        traceDB.cloneMonitor(existing.getClass().getSimpleName() + "#" + existing.monitorid, created.getClass().getSimpleName() + "#" + created.monitorid);
     }
 
     @Override
@@ -224,3 +239,4 @@ public class MonitorTraceCollector implements IInternalBehaviorObserver {
 
     }
 }
+

@@ -42,7 +42,7 @@ public class HandlerMethod {
             // __DEFAULT_MESSAGE may contain __LOC, make sure to sub in
             // __DEFAULT_MESSAGE first
             // -P
-            handlerBody = handlerBody.replaceAll("__LOC", Util.defaultLocation);
+            handlerBody = handlerBody.replaceAll("__LOC", Util.getDefaultLocation());
             handlerBody = handlerBody.replaceAll("__SKIP",
                     BaseMonitor.skipEvent + " = true");
 
@@ -85,8 +85,17 @@ public class HandlerMethod {
         ret += "void ";
 
         ret += methodName + " (";
+        if (Main.options.locationFromAjc) {
+            ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint";
+        }
+
         if (!Main.options.stripUnusedParameterInMonitor)
             ret += this.specParam.parameterDeclString();
+
+        if (ret.endsWith(", ")) {
+            ret = ret.substring(0, ret.length() - 2);
+        }
+
         ret += "){\n";
 
         if (Main.options.statistics) {

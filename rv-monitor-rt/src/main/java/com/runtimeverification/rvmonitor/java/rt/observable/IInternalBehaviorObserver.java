@@ -108,7 +108,7 @@ public interface IInternalBehaviorObserver extends IObserver {
 	 * @param set
 	 */
 	public <TMonitor extends IMonitor> void onMonitorTransitioned(AbstractPartitionedMonitorSet<TMonitor> set);
-	
+
 	/**
 	 * Fired when an event handling method is about to leave. This method is invoked
 	 * even if the event is suppressed.

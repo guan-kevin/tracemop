@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import org.aspectj.lang.JoinPoint;
 
 /**
  * A singleton class to record violations of properties and where they happen.
@@ -12,6 +13,8 @@ import java.util.Map;
 public class ViolationRecorder {
 
     public final HashMap<String, HashMap<List<StackTraceElement>, Integer>> occurrences;
+
+    public static HashMap<String, HashMap<String, String>> methodsName = new HashMap<>();
 
     /**
      * Private constructor to make it a singleton.
@@ -56,6 +59,32 @@ public class ViolationRecorder {
             return relevantStack.get(0).toString();
         } else {
             return "(Unknown)";
+        }
+    }
+
+    public static String getLineOfCode(JoinPoint.StaticPart joinpoint) {
+        if (joinpoint != null) {
+            return ViolationRecorder.getLineOfCode(joinpoint.getSourceLocation().getWithinType().getName(), joinpoint.getSourceLocation().toString());
+        } else {
+            return ViolationRecorder.getLineOfCode("", "");
+        }
+    }
+
+    public static String getLineOfCode(String className, String fileName) {
+        if (!methodsName.containsKey(className)) {
+            HashMap<String, String> lineToMethod = new HashMap<>();
+            String name = getLineOfCode();
+            lineToMethod.put(fileName, name);
+            methodsName.put(className, lineToMethod);
+            return name;
+        }
+
+        if (methodsName.get(className).containsKey(fileName)) {
+            return methodsName.get(className).get(fileName);
+        } else {
+            String name = getLineOfCode();
+            methodsName.get(className).put(fileName, name);
+            return name;
         }
     }
 

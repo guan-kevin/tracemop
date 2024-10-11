@@ -12,6 +12,8 @@ public aspect BaseAspect {
   !within(mop..*) &&
   !within(org.h2..*) &&
   !within(org.sqlite..*) &&
+  !within(org.aspectj..*) &&
+  !within(edu.cornell..*) &&
   !within(javamoprt..*) &&
   !within(rvmonitorrt..*) &&
   !within(org.junit..*) &&
@@ -23,5 +25,7 @@ public aspect BaseAspect {
   !within(org.powermock..*) &&
   !within(org.easymock..*) &&
   !within(com.mockrunner..*) &&
-  !within(org.jmock..*);
+  !within(org.jmock..*) &&
+  !within(org.apache.maven..*) &&
+  !within(org.testng..*);
 }

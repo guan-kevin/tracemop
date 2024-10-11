@@ -303,12 +303,20 @@ public class MonitorSet {
 
         ret += monitorSetVar + ".event_" + event.getId() + "(";
         {
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "joinpoint, enclosingJoinpoint, ";
+            }
+
             RVMParameters passing;
             if (Main.options.stripUnusedParameterInMonitor)
                 passing = event.getReferredParameters(event.getRVMParameters());
             else
                 passing = event.getRVMParameters();
             ret += passing.parameterString();
+
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
         }
         ret += ");\n";
 
@@ -734,7 +742,13 @@ public class MonitorSet {
 
             ret += "final" + (synch ? " synchronized " : " ") + "void event_"
                     + eventName + "(";
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint, ";
+            }
             ret += parameters.parameterDeclString();
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
             ret += ") {\n";
 
             if (this.usePartitionedSet) {

@@ -348,7 +348,7 @@ public class BaseMonitor extends Monitor {
                 // __DEFAULT_MESSAGE first
                 // -P
                 eventActionStr = eventActionStr.replaceAll("__LOC",
-                        Util.defaultLocation);
+                        Util.getDefaultLocation());
                 // "this." + loc);
                 eventActionStr = eventActionStr.replaceAll("__ACTIVITY",
                         "this." + activity);
@@ -371,12 +371,18 @@ public class BaseMonitor extends Monitor {
         // CL: Let's not pass parameters that are never referred to by the
         // user's action code.
         {
+            if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                ret += "org.aspectj.lang.JoinPoint.StaticPart joinpoint, org.aspectj.lang.JoinPoint.StaticPart enclosingJoinpoint, ";
+            }
             RVMParameters params;
             if (Main.options.stripUnusedParameterInMonitor)
                 params = event.getReferredParameters(event.getRVMParameters());
             else
                 params = event.getRVMParameters();
             ret += params.parameterDeclString();
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
         }
         ret += ") {\n";
 
@@ -397,9 +403,10 @@ public class BaseMonitor extends Monitor {
         }
 
         if (Main.options.internalBehaviorObserving) {
-            ret += "this.trace.add(\"";
+            // Receive new event, notify traceDB
+            ret += "com.runtimeverification.rvmonitor.java.rt.util.TraceDatabase.getInstance().add(specName + \"#\" + this.monitorid, \"";
             if (Main.options.trackEventLocations) {
-                ret += event.getId() + "\" + \"~\" + TraceUtil.getShortLocation(com.runtimeverification.rvmonitor.java.rt.ViolationRecorder.getLineOfCode())";
+                ret += event.getId() + "\" + \"~\" + TraceUtil.getShortLocation(joinpoint, enclosingJoinpoint)";
             } else {
                 ret += event.getId() + "\"";
             }
@@ -501,6 +508,9 @@ public class BaseMonitor extends Monitor {
                 ret += monitorVar + "."
                         + propMonitor.eventMethods.get(event.getId()) + "(";
                 {
+                    if (Main.options.internalBehaviorObserving || Main.options.locationFromAjc) {
+                        ret += "joinpoint, enclosingJoinpoint, ";
+                    }
                     RVMParameters passing;
                     if (Main.options.stripUnusedParameterInMonitor)
                         passing = event.getReferredParameters(event
@@ -508,6 +518,9 @@ public class BaseMonitor extends Monitor {
                     else
                         passing = event.getRVMParameters();
                     ret += passing.parameterString();
+                    if (ret.endsWith(", ")) {
+                        ret = ret.substring(0, ret.length() - 2);
+                    }
                 }
                 ret += ");\n";
             } else {
@@ -618,9 +631,16 @@ public class BaseMonitor extends Monitor {
             // Generate code to trigger handler
             ret += "if(" + monitorVar + "." + rvmVariable + ") {\n";
             ret += monitorVar + "." + handlerMethod.getMethodName() + "(";
+            if (Main.options.locationFromAjc) {
+                ret += "joinpoint, enclosingJoinpoint, ";
+            }
             if (!Main.options.stripUnusedParameterInMonitor)
                 ret += event.getRVMParametersOnSpec().parameterStringIn(
                         specParam);
+
+            if (ret.endsWith(", ")) {
+                ret = ret.substring(0, ret.length() - 2);
+            }
             ret += ");\n";
 
             ret += "}\n";
@@ -682,7 +702,7 @@ public class BaseMonitor extends Monitor {
             ret += holderName + "(long tau) {\n";
             ret += "super(tau);\n";
             if (Main.options.internalBehaviorObserving)
-                ret += "this.holderid = ++nextid;\n";
+                ret += "this.holderid = nextid.incrementAndGet();\n";
             ret += "}\n\n";
 
             // IMonitor.isTerminated()
@@ -711,7 +731,9 @@ public class BaseMonitor extends Monitor {
 
             if (Main.options.internalBehaviorObserving) {
                 ret += "private int holderid;\n";
-                ret += "private static int nextid;\n\n";
+                ret += "private static java.util.concurrent.atomic.AtomicInteger nextid = new java.util.concurrent.atomic.AtomicInteger(0);\n";
+                ret += "private static String specName = \"" + monitorName + "\";\n";
+
                 ret += "@Override\n";
                 ret += "public final String getObservableObjectDescription() {\n";
                 ret += "StringBuilder s = new StringBuilder();\n";
@@ -761,9 +783,14 @@ public class BaseMonitor extends Monitor {
         for (PropertyAndHandlers prop : props)
             ret += propMonitors.get(prop).cloneCode;
         if (Main.options.internalBehaviorObserving) {
-            ret += "ret.monitorid = ++nextid;\n";
-            ret += "ret.trace = new ArrayList<String>();\n";
-            ret += "ret.trace.addAll(this.trace);\n";
+            ret += "ret.monitorid = nextid.incrementAndGet();\n";
+            // Clone monitor, notify traceDB
+            ret += "com.runtimeverification.rvmonitor.java.rt.util.TraceDatabase.getInstance().cloneMonitor(";
+            ret += "specName + \"#\" + this.monitorid, specName + \"#\" + ret.monitorid";
+            ret += ");\n";
+
+//            ret += "ret.trace = new ArrayList<String>();\n";
+//            ret += "ret.trace.addAll(this.trace);\n";
         }
         if (this.isAtomicMonitorUsed()) {
             ret += "ret.pairValue = new AtomicInteger(pairValue.get());\n";
@@ -877,8 +904,8 @@ public class BaseMonitor extends Monitor {
             ret += stat.incNumMonitor();
         }
         if (Main.options.internalBehaviorObserving) {
-            ret += "this.trace = new ArrayList<String>();\n";
-            ret += "this.monitorid = ++nextid;\n";
+//            ret += "this.trace = new ArrayList<String>();\n";
+            ret += "this.monitorid = nextid.incrementAndGet();\n";
         }
         ret += "}\n";
         ret += "\n";
@@ -1059,27 +1086,29 @@ public class BaseMonitor extends Monitor {
 //            ret += "public List<String> getTrace(){ return this.trace; };\n";
 //            ret += "private int monitorid;\n";
 //            ret += "public int getMonitorID(){ return this.monitorid; };\n";
-            ret += "private static int nextid;\n";
+            ret += "private static java.util.concurrent.atomic.AtomicInteger nextid = new java.util.concurrent.atomic.AtomicInteger(0);\n";
+            ret += "private static String specName = \"" + monitorName + "\";\n";
+
             ret += "\n";
             ret += "@Override\n";
             ret += "public final String getObservableObjectDescription() {\n";
             ret += "StringBuilder s = new StringBuilder();\n";
             ret += "s.append('#');\n";
             ret += "s.append(this.monitorid);\n";
-            if (feature.isTimeTrackingNeeded()) {
-                ret += "s.append(\"{t:\");\n";
-                ret += "s.append(this.tau);\n";
-                ret += "s.append(\",dis:\");\n";
-                ret += "s.append(this.disable);\n";
-                ret += "s.append('}');\n";
-            }
-            ret += "s.append('[');\n";
-            ret += "for (int i = 0; i < this.trace.size(); ++i) {\n";
-            ret += "if (i > 0)\n";
-            ret += "s.append(',');\n";
-            ret += "s.append(this.trace.get(i));\n";
-            ret += "}\n";
-            ret += "s.append(']');\n";
+//            if (feature.isTimeTrackingNeeded()) {
+//                ret += "s.append(\"{t:\");\n";
+//                ret += "s.append(this.tau);\n";
+//                ret += "s.append(\",dis:\");\n";
+//                ret += "s.append(this.disable);\n";
+//                ret += "s.append('}');\n";
+//            }
+//            ret += "s.append('[');\n";
+//            ret += "for (int i = 0; i < this.trace.size(); ++i) {\n";
+//            ret += "if (i > 0)\n";
+//            ret += "s.append(',');\n";
+//            ret += "s.append(this.trace.get(i));\n";
+//            ret += "}\n";
+//            ret += "s.append(']');\n";
             ret += "return s.toString();\n";
             ret += "}\n";
         }
