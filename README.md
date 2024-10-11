@@ -1,4 +1,4 @@
-# TraceMOP
+# TraceMOP: A Trace-Aware Runtime Verification Tool for Java
 
 This repository allows to do explicit-trace runtime verification, and it is built on top of improved and integrated source code that was forked off the official [JavaMOP](https://github.com/runtimeverification/javamop) and [RV-Monitor](https://github.com/runtimeverification/rv-monitor) repositories. Those repositories *are no longer maintained*.
 
@@ -7,41 +7,54 @@ This repository allows to do explicit-trace runtime verification, and it is buil
 We have only tested JavaMOP on:
 
 1. Java 1.8
-2. Maven 3.6.3 and above
+2. Maven 3.8.8 and above
 3. Maven Surefire 2.14 and above
-4. Operating System: Linux or OSX
+4. Operating System: Ubuntu 20.04.6 LTS
 
 ## Setting up
 
-1. **INSTALLING via Docker** Ensure that you have Docker installed. Then, from the same directory as this README.md file, run:
+1. [Install Docker](https://docs.docker.com/get-started/get-docker/)
 
-   a. `cd scripts`
+There are two ways to use TraceMOP. In the future, we will add documentation on how to use TraceMOP without Docker.
 
-   b. `docker build -t mop:latest - < javamopDockerfile`
+1. **Use Docker image provided by TraceMOP** From any directory, run:
 
-   c. `docker run -it mop:latest`
-
-   d. In the Docker container, follow instructions in `$HOME/javamop-agent-bundle/README.txt` to set up a Java agent that attaches JavaMOP to running Java processes.
-
-2. **INSTALLING LOCALLY** From the same directory as this README.md file, run:
-
-   a. `bash scripts/install-javaparser.sh`
+   a. `docker pull softengresearch/tracemop`
    
-   b. `bash scripts/integration-test.sh`
+   b. `docker run -it softengresearch/tracemop`
 
-   The first script installs a modified version of [JavaParser](https://github.com/javaparser/javaparser.git) that this version of JavaMOP depends on. The second command runs all the tests in JavaMOP, makes a JavaMOP agent, installs the JavaMOP agent, integrates the JavaMOP agent into the [Apache Commons FileUpload](https://github.com/apache/commons-fileupload) open-source project, then monitors the tests in that project against [161 specs](https://github.com/owolabileg/property-db/tree/master/annotated-java-api/java). So, understanding and running `scripts/integration-test.sh` is a good way to get started with using JavaMOP.
+2. **Bilding your own image from scratch** From the same directory as this README.md file, run:
 
-   NOTE: We are aware of one parsing-related flaky unit test in JavaMOP. When that test fails, the run of the second script will stop. One work-around is to change `mvn clean package -DskipITs` to `mvn clean package -DskipITs -DskipTests` in `scripts/integration-test.sh`. Another work-around is to comment out all occurrences of `exit 1` in `scripts/integration-test.sh`. We plan to fix these tests soon, but please feel free to contribute a pull request if you have a patch.
+   a. `docker build -f scripts/Dockerfile . -t tracemop`
+
+   b. `docker run -it tracemop /bin/bash`
+
+## Using TraceMOP to monitor Maven projects
+
+1. **Run with trace collection** Run the following commands **inside** Docker container:
+
+   a. `cd ~/tracemop/scripts`
+
+   b. `bash collect_traces.sh <org/repo> <sha> <output-directory> [measure-time (default is false)] [collect-per-test (default is false)]`
+
+   Example: `bash collect_traces.sh flowpowered/commons 0690efd output true`
+
+2. **Run without trace collection** Run the following commands **inside** Docker container:
+
+   a. `cd ~/tracemop/scripts`
+
+   b. `bash not_collect_traces.sh <org/repo> <sha> <output-directory> [statistics (default is false)] [save-violations (default is true)]`
+
+   Example: `bash not_collect_traces.sh flowpowered/commons 0690efd output`
 
 ## Configuration
 
-Several options allow to collect the traces that JavaMOP generates. The trace collection process can be further configured via the contents of the `-dbConfigFile` option. Currently, the file that is passed into the `-dbConfigFile` allows to configure two parameters:
-  
-   a. Use `db` to specify what DBMS to use. Currently, we support two values: `h2` (default), and `h2-normalized` (experimental).
+Depending on a project’s characteristics (e.g., when there are very few tests), naively collecting all traces can outperform our new data structures. So, we provide an option to switch to this naive approach:
 
-   b. Setting `dumpDB=true` will cause JavaMOP to write all collected traces to disk. This option is `false` by default.
-
-Beyond this configuration file, you can see all options that are allowed by running `javamop -help` or `rv-monitor -help`.
+```bash
+export TRACEMOP_DB=simple  // Store traces in simple data structure
+export TRACEMOP_DB=trie  // Store traces in new prefix tree like data structure
+```
 
 ## Contributing
 
