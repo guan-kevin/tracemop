@@ -1,10 +1,10 @@
 # TraceMOP: A Trace-Aware Runtime Verification Tool for Java
 
-This repository allows to do explicit-trace runtime verification, and it is built on top of improved and integrated source code that was forked off the official [JavaMOP](https://github.com/runtimeverification/javamop) and [RV-Monitor](https://github.com/runtimeverification/rv-monitor) repositories. Those repositories *are no longer maintained*.
+This repository allows to do explicit-trace runtime verification, and it is built on top of improved and integrated source code that was forked off the official [JavaMOP](https://github.com/runtimeverification/javamop) and [RV-Monitor](https://github.com/runtimeverification/rv-monitor) repositories. Those repositories are *no longer maintained but we have ensured to preserve all their Java-related functionality here (read on to see how to run TraceMOP to get only those existing functionality)*.
 
 ## Prerequisites
 
-We have only tested JavaMOP on:
+We have only tested TraceMOP on:
 
 1. Java 1.8
 2. Maven 3.8.8 and above
@@ -15,15 +15,15 @@ We have only tested JavaMOP on:
 
 1. [Install Docker](https://docs.docker.com/get-started/get-docker/)
 
-There are two ways to use TraceMOP. In the future, we will add documentation on how to use TraceMOP without Docker.
+There are two ways to use TraceMOP at this time. In the future, we will add documentation on how to use TraceMOP without Docker.
 
-1. **Use Docker image provided by TraceMOP** From any directory, run:
+1. **Use Docker image provided by TraceMOP.** From any directory, run:
 
    a. `docker pull softengresearch/tracemop`
    
    b. `docker run -it softengresearch/tracemop`
 
-2. **Bilding your own image from scratch** From the same directory as this README.md file, run:
+2. **Building your own image from scratch.** From the same directory as this README.md file, run:
 
    a. `docker build -f scripts/Dockerfile . -t tracemop`
 
@@ -31,7 +31,7 @@ There are two ways to use TraceMOP. In the future, we will add documentation on 
 
 ## Using TraceMOP to monitor Maven projects
 
-1. **Run with trace collection** Run the following commands **inside** Docker container:
+1. **Run with trace collection.** Run the following commands **inside** Docker container:
 
    a. `cd ~/tracemop/scripts`
 
@@ -39,9 +39,9 @@ There are two ways to use TraceMOP. In the future, we will add documentation on 
 
    Example: `bash collect_traces.sh flowpowered/commons 0690efd output true`.
 
-   The above example will collect traces for project flowpowered/commons (sha 0690efd), save results to `output` directory.
+   The above example will collect traces for the project, [flowpowered/commons (sha 0690efd)](https://github.com/flowpowered/commons), save results to `output` directory.
 
-2. **Run without trace collection** Run the following commands **inside** Docker container:
+2. **Run without trace collection (i.e., only get JavaMOP functionality).** Run the following commands **inside** Docker container:
 
    a. `cd ~/tracemop/scripts`
 
